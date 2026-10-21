@@ -67,10 +67,10 @@
   "homepage": "https://fileflowhq.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FileFlowHq/Fileflowhq-Tools.git"
+    "url": "git+https://github.com/moyocodes/FileFlowHq-Open-Source.git"
   },
   "bugs": {
-    "url": "https://github.com/FileFlowHq/Fileflowhq-Tools/issues"
+    "url": "https://github.com/moyocodes/FileFlowHq-Open-Source/issues"
   },
   "license": "MIT",
   "publishConfig": {
