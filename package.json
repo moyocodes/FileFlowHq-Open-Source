@@ -1,0 +1,79 @@
+{
+  "name": "@fileflowhq/tools",
+  "version": "0.1.0",
+  "description": "Private, client-side file tools from FileFlowHQ: convert and compress images, merge/split/compress PDFs, PDF to images, images to PDF, CSV/JSON and zip. Nothing is uploaded.",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./data": "./src/data.js",
+    "./pdf": "./src/pdf.js",
+    "./image": "./src/image.js",
+    "./zip": "./src/zip.js",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "src",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.0.379"
+  },
+  "peerDependencies": {
+    "heic-to": "^1.6.6"
+  },
+  "peerDependenciesMeta": {
+    "heic-to": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "file-converter",
+    "image-converter",
+    "image-compression",
+    "compress-image",
+    "pdf",
+    "merge-pdf",
+    "split-pdf",
+    "compress-pdf",
+    "pdf-to-image",
+    "images-to-pdf",
+    "csv-to-json",
+    "json-to-csv",
+    "heic",
+    "webp",
+    "browser",
+    "client-side",
+    "privacy",
+    "fileflowhq"
+  ],
+  "author": "FileFlowHQ (https://fileflowhq.com)",
+  "homepage": "https://fileflowhq.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FileFlowHq/Fileflowhq-Tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FileFlowHq/Fileflowhq-Tools/issues"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
