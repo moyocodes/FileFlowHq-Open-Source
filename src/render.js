@@ -10,9 +10,8 @@ let pdfjsPromise = null
 let workerSrc = null
 
 /**
- * Point pdf.js at its worker file. Call once before using pdfToImages / compressPdf.
- * With Vite:    import worker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'; setPdfWorker(worker)
- * With webpack: setPdfWorker(new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString())
+ * Optional. The package starts its own bundled pdf.js worker (src/pdf.worker.js), so most apps
+ * never call this. Use it only to load a worker file you host yourself, e.g. from a CDN.
  */
 export function setPdfWorker(src) {
   workerSrc = src
@@ -22,6 +21,13 @@ export function setPdfWorker(src) {
 function pdfjs() {
   pdfjsPromise ??= import('pdfjs-dist').then((lib) => {
     if (workerSrc) lib.GlobalWorkerOptions.workerSrc = workerSrc
+    else if (!lib.GlobalWorkerOptions.workerPort && !lib.GlobalWorkerOptions.workerSrc && typeof Worker !== 'undefined') {
+      try {
+        lib.GlobalWorkerOptions.workerPort = new Worker(new URL('./pdf.worker.js', import.meta.url), { type: 'module' })
+      } catch {
+        // No module workers here: pdf.js falls back to running on the main thread.
+      }
+    }
     return lib
   })
   return pdfjsPromise

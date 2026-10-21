@@ -1,0 +1,42 @@
+{
+  "file-drop": {
+    "description": "Drag-and-drop file picker, download helper and button style (used by every component)",
+    "file": "file-drop.tsx",
+    "registryDependencies": []
+  },
+  "compress-image": {
+    "description": "Compress an image to a target size (e.g. 100 KB)",
+    "file": "compress-image.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "convert-image": {
+    "description": "Convert images to JPEG, PNG, WebP or AVIF (HEIC in)",
+    "file": "convert-image.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "merge-pdf": {
+    "description": "Merge PDFs in a chosen order",
+    "file": "merge-pdf.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "split-pdf": {
+    "description": "Extract a page range or split every page",
+    "file": "split-pdf.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "pdf-to-images": {
+    "description": "Turn PDF pages into PNG or JPEG images",
+    "file": "pdf-to-images.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "images-to-pdf": {
+    "description": "Combine images into one PDF",
+    "file": "images-to-pdf.tsx",
+    "registryDependencies": ["file-drop"]
+  },
+  "csv-json": {
+    "description": "Convert CSV to JSON and back",
+    "file": "csv-json.tsx",
+    "registryDependencies": ["file-drop"]
+  }
+}

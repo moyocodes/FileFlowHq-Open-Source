@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@fileflowhq/tools playground</title>
+    <!--
+      Try every tool in your browser. Nothing is uploaded.
+
+      Two ways to open it:
+        • From the published package: open this file as-is (served over http), it loads
+          @fileflowhq/tools from esm.sh.
+        • From your local checkout:   npm run dev, then open http://localhost:5173/example/?local
+          ?local loads ../src instead, so you can test changes before publishing.
+    -->
+    <script type="importmap">
+      {
+        "imports": {
+          "pdf-lib": "https://esm.sh/pdf-lib@1.17.1",
+          "jszip": "https://esm.sh/jszip@3.10.1",
+          "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.10.38"
+        }
+      }
+    </script>
+    <style>
+      :root { color-scheme: light dark; --bg: #f6f7f7; --panel: #fff; --text: #111; --dim: #667; --line: #dde; --accent: #12a46b; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #0b0f0f; --panel: #141a1a; --text: #eef; --dim: #8a9897; --line: #263030; --accent: #3be698; } }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--text); }
+      main { max-width: 900px; margin: 0 auto; padding: 32px 16px 64px; }
+      h1 { margin: 0 0 4px; font-size: 1.6rem; }
+      .sub { color: var(--dim); margin: 0 0 24px; }
+      .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--panel); border: 1px solid var(--line); font-size: 0.8rem; }
+      section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 14px 0; }
+      h2 { margin: 0 0 4px; font-size: 1.05rem; }
+      .hint { color: var(--dim); margin: 0 0 12px; font-size: 0.85rem; }
+      code { font-size: 0.85em; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      input[type='file'] { max-width: 100%; }
+      input[type='number'], select, textarea { background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; }
+      textarea { width: 100%; height: 130px; font: 12px/1.4 ui-monospace, monospace; }
+      button { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+      @media (prefers-color-scheme: dark) { button { color: #0b0f0f; } }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .out { margin-top: 10px; font-size: 0.9rem; }
+      .out a { color: var(--accent); margin-right: 10px; }
+      .err { color: #d33; }
+      .grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+      @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>@fileflowhq/tools playground</h1>
+      <p class="sub">Every tool runs in this tab. Your files never leave your device. <span class="badge" id="source">loading…</span></p>
+
+      <section>
+        <h2>Compress image to a size</h2>
+        <p class="hint"><code>compressImage(file, targetBytes)</code></p>
+        <div class="row">
+          <input type="file" id="ci-file" accept="image/*,.heic,.heif" />
+          <input type="number" id="ci-kb" value="200" min="10" style="width: 90px" /> KB
+          <button id="ci-go">Compress</button>
+        </div>
+        <div class="out" id="ci-out"></div>
+      </section>
+
+      <section>
+        <h2>Convert image</h2>
+        <p class="hint"><code>convertImage(file, { format, quality, maxWidth })</code></p>
+        <div class="row">
+          <input type="file" id="cv-file" accept="image/*,.heic,.heif" multiple />
+          <select id="cv-format"><option>webp</option><option>jpeg</option><option>png</option><option>avif</option></select>
+          max width <input type="number" id="cv-width" placeholder="any" style="width: 90px" />
+          <button id="cv-go">Convert</button>
+        </div>
+        <div class="out" id="cv-out"></div>
+      </section>
+
+      <section>
+        <h2>Merge PDFs</h2>
+        <p class="hint"><code>mergePdfs([a, b, …])</code>, in the order you pick them</p>
+        <div class="row"><input type="file" id="mp-file" accept=".pdf" multiple /><button id="mp-go">Merge</button></div>
+        <div class="out" id="mp-out"></div>
+      </section>
+
+      <section>
+        <h2>Split / extract pages</h2>
+        <p class="hint"><code>extractPages(pdf, { from, to })</code> · <code>splitPdf(pdf)</code> + <code>zipFiles()</code></p>
+        <div class="row">
+          <input type="file" id="sp-file" accept=".pdf" />
+          pages <input type="number" id="sp-from" value="1" min="1" style="width: 70px" /> to <input type="number" id="sp-to" value="1" min="1" style="width: 70px" />
+          <button id="sp-go">Extract</button><button id="sp-all">Split all (.zip)</button>
+        </div>
+        <div class="out" id="sp-out"></div>
+      </section>
+
+      <section>
+        <h2>PDF → images</h2>
+        <p class="hint"><code>pdfToImages(pdf, { format, scale })</code></p>
+        <div class="row">
+          <input type="file" id="pi-file" accept=".pdf" />
+          <select id="pi-format"><option>png</option><option>jpeg</option></select>
+          <select id="pi-scale"><option value="1">72 dpi</option><option value="2" selected>144 dpi</option><option value="3">216 dpi</option></select>
+          <button id="pi-go">Convert</button>
+        </div>
+        <div class="out" id="pi-out"></div>
+      </section>
+
+      <section>
+        <h2>Compress PDF</h2>
+        <p class="hint"><code>compressPdf(pdf, targetBytes)</code> (pages become images, so the text can't be selected afterwards)</p>
+        <div class="row">
+          <input type="file" id="cp-file" accept=".pdf" />
+          <input type="number" id="cp-kb" value="1024" min="50" style="width: 90px" /> KB
+          <button id="cp-go">Compress</button>
+        </div>
+        <div class="out" id="cp-out"></div>
+      </section>
+
+      <section>
+        <h2>Images → PDF</h2>
+        <p class="hint"><code>imagesToPdf(images, { pageSize })</code></p>
+        <div class="row">
+          <input type="file" id="ip-file" accept="image/*,.heic,.heif" multiple />
+          <select id="ip-size"><option value="a4">A4</option><option value="fit">fit image</option></select>
+          <button id="ip-go">Create PDF</button>
+        </div>
+        <div class="out" id="ip-out"></div>
+      </section>
+
+      <section>
+        <h2>CSV ⇄ JSON</h2>
+        <p class="hint"><code>csvToJson(text)</code> · <code>jsonToCsv(data)</code></p>
+        <div class="grid">
+          <textarea id="cj-in">name,age,city
+Ada,36,London
+"Hopper, Grace",85,"New York"</textarea>
+          <textarea id="cj-out" readonly placeholder="Result"></textarea>
+        </div>
+        <div class="row" style="margin-top: 8px"><button id="cj-tojson">CSV → JSON</button><button id="cj-tocsv">JSON → CSV</button></div>
+        <div class="out" id="cj-err"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      const local = new URLSearchParams(location.search).has('local')
+      const VERSION = 'latest'
+      const t = await import(local ? '../src/index.js' : `https://esm.sh/@fileflowhq/tools@${VERSION}?deps=pdfjs-dist@4.10.38`)
+      document.getElementById('source').textContent = local ? 'local ../src' : `esm.sh @fileflowhq/tools@${VERSION}`
+
+      // A page loaded from a CDN can't start the package's bundled worker, so point pdf.js at a
+      // hosted copy. Apps built with Vite/webpack/Rollup/Parcel don't need this line.
+      t.setPdfWorker('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs')
+
+      const $ = (id) => document.getElementById(id)
+      const files = (id) => Array.from($(id).files)
+      const link = (blob, name) => `<a href="${URL.createObjectURL(blob)}" download="${name}">${name}</a> ${t.formatBytes(blob.size)}`
+      const base = (f) => t.stripExtension(f.name)
+      const extOf = (blob) => blob.type.split('/')[1].replace('jpeg', 'jpg')
+
+      function run(button, out, job) {
+        $(button).onclick = async () => {
+          $(button).disabled = true
+          $(out).innerHTML = 'Working…'
+          const started = performance.now()
+          try {
+            $(out).innerHTML = (await job()) + ` <span style="opacity:.6">· ${Math.round(performance.now() - started)} ms</span>`
+          } catch (e) {
+            $(out).innerHTML = `<span class="err">${e.message}</span>`
+          } finally {
+            $(button).disabled = false
+          }
+        }
+      }
+      const need = (list, what) => {
+        if (!list.length) throw new Error(`Choose ${what} first.`)
+        return list
+      }
+
+      run('ci-go', 'ci-out', async () => {
+        const [f] = need(files('ci-file'), 'an image')
+        const { blob, hit } = await t.compressImage(f, Number($('ci-kb').value) * 1024)
+        return `${t.formatBytes(f.size)} → ${link(blob, `${base(f)}-compressed.${extOf(blob)}`)}${hit ? '' : ' (smallest possible)'}`
+      })
+
+      run('cv-go', 'cv-out', async () => {
+        const format = $('cv-format').value
+        const maxWidth = Number($('cv-width').value) || undefined
+        const out = []
+        for (const f of need(files('cv-file'), 'images')) {
+          const blob = await t.convertImage(f, { format, maxWidth })
+          out.push(link(blob, `${base(f)}.${extOf(blob)}`))
+        }
+        return out.join('<br>')
+      })
+
+      run('mp-go', 'mp-out', async () => link(await t.mergePdfs(need(files('mp-file'), 'PDFs')), 'merged.pdf'))
+
+      $('sp-file').onchange = async () => {
+        const [f] = files('sp-file')
+        if (!f) return
+        const n = await t.getPdfPageCount(f)
+        $('sp-to').value = n
+        $('sp-out').textContent = `${n} pages`
+      }
+      run('sp-go', 'sp-out', async () => {
+        const [f] = need(files('sp-file'), 'a PDF')
+        const from = Number($('sp-from').value)
+        const to = Number($('sp-to').value)
+        return link(await t.extractPages(f, { from, to }), `${base(f)}-pages-${from}-${to}.pdf`)
+      })
+      run('sp-all', 'sp-out', async () => {
+        const [f] = need(files('sp-file'), 'a PDF')
+        const parts = await t.splitPdf(f)
+        return link(await t.zipFiles(parts.map((blob, i) => ({ name: `${base(f)}-page-${i + 1}.pdf`, blob }))), `${base(f)}-pages.zip`)
+      })
+
+      run('pi-go', 'pi-out', async () => {
+        const [f] = need(files('pi-file'), 'a PDF')
+        const format = $('pi-format').value
+        const images = await t.pdfToImages(f, { format, scale: Number($('pi-scale').value) })
+        const ext = format === 'jpeg' ? 'jpg' : 'png'
+        return images.map((blob, i) => link(blob, `${base(f)}-page-${i + 1}.${ext}`)).join('<br>')
+      })
+
+      run('cp-go', 'cp-out', async () => {
+        const [f] = need(files('cp-file'), 'a PDF')
+        const { blob, hit } = await t.compressPdf(f, Number($('cp-kb').value) * 1024)
+        return `${t.formatBytes(f.size)} → ${link(blob, `${base(f)}-compressed.pdf`)}${hit ? '' : ' (smallest possible)'}`
+      })
+
+      run('ip-go', 'ip-out', async () => link(await t.imagesToPdf(need(files('ip-file'), 'images'), { pageSize: $('ip-size').value, margin: 24 }), 'images.pdf'))
+
+      const convertText = (fn) => () => {
+        $('cj-err').textContent = ''
+        try {
+          $('cj-out').value = fn($('cj-in').value)
+        } catch (e) {
+          $('cj-err').innerHTML = `<span class="err">${e.message}</span>`
+        }
+      }
+      $('cj-tojson').onclick = convertText((v) => JSON.stringify(t.csvToJson(v), null, 2))
+      $('cj-tocsv').onclick = convertText((v) => t.jsonToCsv(v))
+    </script>
+  </body>
+</html>

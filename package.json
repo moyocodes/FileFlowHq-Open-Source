@@ -1,6 +1,6 @@
 {
   "name": "@fileflowhq/tools",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Private, client-side file tools from FileFlowHQ: convert and compress images, merge/split/compress PDFs, PDF to images, images to PDF, CSV/JSON and zip. Nothing is uploaded.",
   "type": "module",
   "main": "./src/index.js",
@@ -25,7 +25,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "dev": "npx --yes serve . -l 5173"
   },
   "dependencies": {
     "jszip": "^3.10.1",

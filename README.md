@@ -54,7 +54,7 @@ Load it from a CDN as an ES module:
 </script>
 ```
 
-`https://cdn.jsdelivr.net/npm/@fileflowhq/tools/+esm` works too. For production, pin a version, e.g. `https://esm.sh/@fileflowhq/tools@0.1.0`.
+`https://cdn.jsdelivr.net/npm/@fileflowhq/tools/+esm` works too. For production, pin a version, e.g. `https://esm.sh/@fileflowhq/tools@0.2.0`. To use `pdfToImages` or `compressPdf` from a CDN, see [the one-line worker setup](#pdf-rendering-pdf--images-compress-pdf).
 
 ### In Node (scripts, servers, CLIs)
 
@@ -119,20 +119,20 @@ Inputs can be a `Blob`/`File`, `ArrayBuffer` or `Uint8Array`. Internal "go to pa
 
 ### PDF rendering: PDF → images, compress PDF
 
-These use [pdf.js](https://mozilla.github.io/pdf.js/). Tell it where its worker file is, once:
+These use [pdf.js](https://mozilla.github.io/pdf.js/), which renders in a background worker. **The package ships its own worker and starts it for you.** With Vite, webpack 5, Next.js, Rollup or Parcel there's nothing to set up, and you don't need to install `pdfjs-dist` yourself:
 
 ```js
-import { setPdfWorker, pdfToImages, compressPdf } from '@fileflowhq/tools'
-
-// Vite
-import worker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
-setPdfWorker(worker)
-
-// webpack 5 / others
-setPdfWorker(new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString())
+import { pdfToImages, compressPdf } from '@fileflowhq/tools'
 
 const images = await pdfToImages(pdf, { format: 'png', scale: 2 }) // scale 2 ≈ 144 dpi
 const { blob, hit } = await compressPdf(pdf, 1024 * 1024)          // aim for 1 MB
+```
+
+**Loading the package from a CDN** (plain HTML, no bundler)? Then a bundler isn't there to bundle the worker, so point pdf.js at a hosted copy once, before the first call:
+
+```js
+import { setPdfWorker } from 'https://esm.sh/@fileflowhq/tools'
+setPdfWorker('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs')
 ```
 
 `compressPdf` renders each page and re-encodes it as JPEG, so **the text layer is lost**: the text can't be selected or searched afterwards. That's the same trade-off every browser-side PDF compressor makes. Links are recreated.
@@ -176,6 +176,13 @@ import { csvToJson } from '@fileflowhq/tools/data'
 import { mergePdfs } from '@fileflowhq/tools/pdf'
 ```
 
+## Playground
+
+[`example/index.html`](example/index.html) is a one-page playground with every tool: pick files, run, download the results.
+
+- **Published version:** serve the repo (`npm run dev`) and open http://localhost:5173/example/. It loads the package from esm.sh.
+- **Your local changes:** open http://localhost:5173/example/?local. It loads `src/` directly, so you can test before publishing.
+
 ## Try it without code
 
 Every tool is free to use at **[fileflowhq.com](https://fileflowhq.com)**, along with a Chrome extension and full in-browser editors.
@@ -189,6 +196,7 @@ git clone https://github.com/moyocodes/FileFlowHq-Open-Source.git
 cd FileFlowHq-Open-Source
 npm install
 npm test        # runs the tests that work in Node (CSV/JSON, PDF, zip)
+npm run dev     # then open http://localhost:5173/example/?local to try your changes in the playground
 ```
 
 The image and PDF-rendering tools need a browser, so test changes to them in Chrome, Safari and Firefox.

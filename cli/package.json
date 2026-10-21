@@ -1,0 +1,54 @@
+{
+  "name": "fileflowhq",
+  "version": "0.1.0",
+  "description": "Add ready-made, private file tools to your React app: compress images, convert images, merge/split PDFs, PDF to images, images to PDF, CSV/JSON. Copies the components into your project, shadcn-style.",
+  "type": "module",
+  "bin": {
+    "fileflowhq": "bin/fileflowhq.js"
+  },
+  "files": [
+    "bin",
+    "registry",
+    "registry-jsx",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build-jsx.mjs",
+    "prepublishOnly": "node scripts/build-jsx.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "cli",
+    "react",
+    "components",
+    "tailwind",
+    "shadcn",
+    "file-upload",
+    "image-compression",
+    "compress-image",
+    "convert-image",
+    "merge-pdf",
+    "split-pdf",
+    "pdf-to-image",
+    "images-to-pdf",
+    "csv-to-json",
+    "fileflowhq"
+  ],
+  "author": "FileFlowHQ (https://fileflowhq.com)",
+  "homepage": "https://fileflowhq.com/developers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyocodes/FileFlowHq-Open-Source.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/moyocodes/FileFlowHq-Open-Source/issues"
+  },
+  "license": "MIT"
+}
