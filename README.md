@@ -121,6 +121,35 @@ import { mergePdfs } from '@fileflowhq/tools/pdf'
 
 Every tool is free to use at **[fileflowhq.com](https://fileflowhq.com)**, along with a Chrome extension and full in-browser editors.
 
+## Contributing
+
+Issues and pull requests are welcome at [github.com/moyocodes/FileFlowHq-Open-Source](https://github.com/moyocodes/FileFlowHq-Open-Source).
+
+```bash
+git clone https://github.com/moyocodes/FileFlowHq-Open-Source.git
+cd FileFlowHq-Open-Source
+npm install
+npm test        # runs the tests that work in Node (CSV/JSON, PDF, zip)
+```
+
+The image and PDF-rendering tools need a browser, so test changes to them in Chrome, Safari and Firefox.
+
+## Publishing to npm (maintainers)
+
+One-time setup:
+
+1. Create the free organisation **fileflowhq** on [npmjs.com](https://www.npmjs.com/) (avatar → **Add Organization**). This reserves the `@fileflowhq/...` name.
+2. In a terminal, run `npm login` and sign in with that npm account.
+
+Each release:
+
+1. Bump the version in `package.json`, following semver: `npm version patch` for fixes, `minor` for new tools, `major` for breaking changes.
+2. Run `npm test`.
+3. Run `npm publish`. `publishConfig.access` is already `public`, which scoped packages need.
+4. Push the commit and tag: `git push --follow-tags`.
+
+Anyone can then install it with `npm install @fileflowhq/tools`.
+
 ## License
 
 MIT © James Moyosore (FileFlowHQ). Built on [pdf-lib](https://github.com/Hopding/pdf-lib) (MIT), [pdf.js](https://github.com/mozilla/pdf.js) (Apache-2.0) and [JSZip](https://github.com/Stuk/jszip) (MIT/GPLv3).
