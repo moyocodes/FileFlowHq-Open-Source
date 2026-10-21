@@ -11,6 +11,65 @@ The file tools behind [FileFlowHQ](https://fileflowhq.com), for your own apps. T
 npm install @fileflowhq/tools
 ```
 
+## Quick start
+
+### In a project with a bundler (Vite, Next.js, webpack…)
+
+```bash
+npm install @fileflowhq/tools
+```
+
+```js
+import { compressImage, mergePdfs, csvToJson } from '@fileflowhq/tools'
+
+input.addEventListener('change', async () => {
+  const file = input.files[0]
+  const { blob } = await compressImage(file, 200 * 1024) // ≤ 200 KB
+  download(blob, 'compressed.jpg')
+})
+
+function download(blob, name) {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+```
+
+### In a plain HTML page (no build step)
+
+Load it from a CDN as an ES module:
+
+```html
+<input type="file" id="pick" accept="image/*" />
+<script type="module">
+  import { convertImage } from 'https://esm.sh/@fileflowhq/tools'
+
+  document.getElementById('pick').addEventListener('change', async (e) => {
+    const webp = await convertImage(e.target.files[0], { format: 'webp', quality: 0.85 })
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(webp), download: 'image.webp' })
+    a.click()
+  })
+</script>
+```
+
+`https://cdn.jsdelivr.net/npm/@fileflowhq/tools/+esm` works too. For production, pin a version, e.g. `https://esm.sh/@fileflowhq/tools@0.1.0`.
+
+### In Node (scripts, servers, CLIs)
+
+The PDF, CSV/JSON and zip tools work in Node 18+:
+
+```js
+import { readFile, writeFile } from 'node:fs/promises'
+import { mergePdfs, csvToJson } from '@fileflowhq/tools'
+
+const merged = await mergePdfs([await readFile('a.pdf'), await readFile('b.pdf')])
+await writeFile('merged.pdf', Buffer.from(await merged.arrayBuffer()))
+
+console.log(csvToJson(await readFile('data.csv', 'utf8')))
+```
+
 ## Where each tool runs
 
 | Tool | Browser | Worker | Node |
