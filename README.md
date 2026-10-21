@@ -11,6 +11,20 @@ The file tools behind [FileFlowHQ](https://fileflowhq.com), for your own apps. T
 npm install @fileflowhq/tools
 ```
 
+| | Link |
+| --- | --- |
+| Live playground | https://fileflowhq.com/playground |
+| Library on npm | https://www.npmjs.com/package/@fileflowhq/tools |
+| React components CLI on npm | https://www.npmjs.com/package/fileflowhq |
+| Developer page | https://fileflowhq.com/developers |
+
+This repo has two packages:
+
+| Package | Folder | What it is |
+| --- | --- | --- |
+| [`@fileflowhq/tools`](https://www.npmjs.com/package/@fileflowhq/tools) | repo root | The JavaScript library: functions you call from your own code |
+| [`fileflowhq`](https://www.npmjs.com/package/fileflowhq) | [`cli/`](cli/) | A CLI that copies ready-made React components (built on the library) into your project |
+
 ## Quick start
 
 ### In a project with a bundler (Vite, Next.js, webpack…)
@@ -69,6 +83,32 @@ await writeFile('merged.pdf', Buffer.from(await merged.arrayBuffer()))
 
 console.log(csvToJson(await readFile('data.csv', 'utf8')))
 ```
+
+### Ready-made React components (CLI)
+
+Don't want to build the UI yourself? The `fileflowhq` CLI copies finished components (drag-and-drop, options, download button) into your React project, styled with Tailwind CSS. The files become yours to edit.
+
+1. In the root of your React project (Vite, Next.js, Remix…), run:
+   ```bash
+   npx fileflowhq add compress-image merge-pdf
+   ```
+   This copies the files into `src/components/fileflowhq/`, as `.tsx` in TypeScript projects and `.jsx` otherwise, and installs `@fileflowhq/tools` for you.
+2. Use them:
+   ```jsx
+   import { CompressImage } from './components/fileflowhq/compress-image'
+   import { MergePdf } from './components/fileflowhq/merge-pdf'
+
+   export default function Page() {
+     return (
+       <>
+         <CompressImage />
+         <MergePdf />
+       </>
+     )
+   }
+   ```
+
+Components: `compress-image`, `convert-image`, `merge-pdf`, `split-pdf`, `pdf-to-images`, `images-to-pdf`, `csv-json`. Run `npx fileflowhq list` to see them, and `npx fileflowhq add --all` to add every one. Full CLI docs are in [`cli/README.md`](cli/README.md).
 
 ## Where each tool runs
 
@@ -180,7 +220,8 @@ import { mergePdfs } from '@fileflowhq/tools/pdf'
 
 [`example/index.html`](example/index.html) is a one-page playground with every tool: pick files, run, download the results.
 
-- **Published version:** serve the repo (`npm run dev`) and open http://localhost:5173/example/. It loads the package from esm.sh.
+- **Online:** https://fileflowhq.com/playground, always the latest published version.
+- **Published version, locally:** serve the repo (`npm run dev`) and open http://localhost:5173/example/. It loads the package from esm.sh.
 - **Your local changes:** open http://localhost:5173/example/?local. It loads `src/` directly, so you can test before publishing.
 
 ## Try it without code
@@ -216,6 +257,17 @@ Each release:
 4. Push the commit and tag: `git push --follow-tags`.
 
 Anyone can then install it with `npm install @fileflowhq/tools`.
+
+**The CLI** (`cli/`) is published separately, from its own folder:
+
+```bash
+cd cli
+npm install
+npm version patch      # or minor / major
+npm publish            # builds the .jsx copies first (prepublishOnly)
+```
+
+Approve each publish with your npm two-factor method (e.g. Touch ID). A brand-new version can show as `0.0.0-stage` on npm for a few minutes while npm processes it.
 
 ## License
 
